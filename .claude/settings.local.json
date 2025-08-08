@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(java:*)",
+      "Bash(mysql:*)",
+      "Bash(./mvnw:*)",
+      "Bash(curl:*)",
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(npx:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run install:all:*)",
+      "Bash(mvn spring-boot:run:*)",
+      "Bash(timeout 45 mvn spring-boot:run:*)",
+      "Bash(copy TeamsPage.jsx TeamsPage.original.jsx)",
+      "Bash(copy TeamsPage.mockdata.jsx TeamsPage.jsx)",
+      "Bash(cp:*)",
+      "Bash(timeout 30 ./mvnw spring-boot:run:*)",
+      "Bash(timeout 10 curl -s http://localhost:8080/api/teams)",
+      "Bash(timeout 5 curl -f -s http://localhost:8080/api/teams)",
+      "Bash(start \"Backend Server\" ./mvnw spring-boot:run -Dspring-boot.run.profiles=local)",
+      "Bash(copy:*)",
+      "Bash(start:*)",
+      "Bash(timeout 5 curl -f -s http://localhost:8080/health)",
+      "Bash(timeout 5 curl -s http://localhost:8080)",
+      "Bash(timeout:*)",
+      "Bash(tasklist:*)",
+      "Bash(powershell:*)",
+      "Bash(rm:*)",
+      "Bash(move TestConfiguration.java TestDataConfiguration.java)",
+      "Bash(mv:*)",
+      "Bash(./github-setup.bat)",
+      "Bash(del nul)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}

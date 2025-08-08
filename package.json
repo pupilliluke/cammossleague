@@ -1,0 +1,25 @@
+{
+  "name": "cammoss-basketball-league",
+  "version": "1.0.0",
+  "description": "Cam Moss Summer Basketball League Management Platform",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "mvn spring-boot:run",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd .. && mvn clean package -DskipTests",
+    "install:all": "npm install && cd client && npm install",
+    "install:client": "cd client && npm install",
+    "start": "cd .. && java -jar target/cammossleague-0.0.1-SNAPSHOT.jar",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "cd client && npm run test",
+    "test:server": "cd .. && mvn test",
+    "lint": "cd client && npm run lint",
+    "setup": "npm run install:all && echo 'Setup complete! Copy client/.env.example to client/.env and configure your environment variables.'"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
