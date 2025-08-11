@@ -1,5 +1,6 @@
 package cammossleague.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,12 +17,13 @@ import java.util.List;
 public class Player extends BaseEntity {
     
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "season_id", nullable = false)
+    @JsonIgnore
     private Season season;
     
     @Column(name = "jersey_number")
@@ -65,6 +67,7 @@ public class Player extends BaseEntity {
     @OneToMany(mappedBy = "player", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<PlayerTeam> playerTeams;
     
     public enum Position {

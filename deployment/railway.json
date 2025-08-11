@@ -1,0 +1,42 @@
+{
+  "name": "cam-moss-league",
+  "services": {
+    "backend": {
+      "build": {
+        "builder": "DOCKERFILE",
+        "dockerfilePath": "Dockerfile"
+      },
+      "deploy": {
+        "healthcheckPath": "/actuator/health",
+        "healthcheckTimeout": 30,
+        "restartPolicyType": "ON_FAILURE"
+      },
+      "source": {
+        "repo": "your-github-repo"
+      },
+      "variables": {
+        "DATABASE_URL": "${{Postgres.DATABASE_URL}}",
+        "DATABASE_USERNAME": "${{Postgres.PGUSER}}",
+        "DATABASE_PASSWORD": "${{Postgres.PGPASSWORD}}",
+        "JPA_DDL_AUTO": "update",
+        "JPA_SHOW_SQL": "false",
+        "SQL_INIT_MODE": "always",
+        "PORT": "8080"
+      }
+    },
+    "database": {
+      "image": "postgres:16",
+      "variables": {
+        "POSTGRES_DB": "cammossleague",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "${{POSTGRES_PASSWORD}}"
+      },
+      "volumes": [
+        {
+          "mountPath": "/var/lib/postgresql/data",
+          "name": "postgres-data"
+        }
+      ]
+    }
+  }
+}

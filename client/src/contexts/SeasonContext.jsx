@@ -27,6 +27,17 @@ export const SeasonProvider = ({ children }) => {
     staleTime: 10 * 60 * 1000, // 10 minutes
   })
 
+  // Fetch most recent season (for default selection)
+  const { 
+    data: mostRecentSeason, 
+    isLoading: mostRecentSeasonLoading 
+  } = useQuery({
+    queryKey: ['season', 'recent'],
+    queryFn: seasonService.getMostRecentSeason,
+    retry: 2,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+  })
+
   // Fetch all seasons for historical data
   const { 
     data: allSeasons = [], 
@@ -38,23 +49,27 @@ export const SeasonProvider = ({ children }) => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
-  // Set active season as default selection
+  // Set most recent season as default selection
   useEffect(() => {
-    if (activeSeason && !selectedSeasonId) {
-      setSelectedSeasonId(activeSeason.id)
+    if (mostRecentSeason && !selectedSeasonId) {
+      setSelectedSeasonId(mostRecentSeason.id)
     }
-  }, [activeSeason, selectedSeasonId])
+  }, [mostRecentSeason, selectedSeasonId])
 
   // Get currently selected season data
   const selectedSeason = selectedSeasonId 
-    ? allSeasons.find(season => season.id === selectedSeasonId) || activeSeason
-    : activeSeason
+    ? allSeasons.find(season => season.id === selectedSeasonId) || mostRecentSeason
+    : mostRecentSeason
 
   const value = {
     // Active season data
     activeSeason,
     activeSeasonLoading,
     activeSeasonError,
+    
+    // Most recent season data
+    mostRecentSeason,
+    mostRecentSeasonLoading,
     
     // All seasons
     allSeasons,
@@ -67,6 +82,7 @@ export const SeasonProvider = ({ children }) => {
     
     // Helper methods
     isActiveSeason: selectedSeasonId === activeSeason?.id,
+    isMostRecentSeason: selectedSeasonId === mostRecentSeason?.id,
     isRegistrationOpen: activeSeason?.isRegistrationOpen && activeSeason?.isActive,
     
     // Season status helpers

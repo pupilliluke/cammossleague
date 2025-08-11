@@ -57,9 +57,11 @@ export default function PlayerCard({ player, showContact = false, showStats = tr
           )}
           
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900">
-              {user.firstName} {user.lastName}
-            </h3>
+            <Link to={`/players/${player.id}`}>
+              <h3 className="text-xl font-bold text-gray-900 hover:text-primary-600 transition-colors cursor-pointer">
+                {user.firstName} {user.lastName}
+              </h3>
+            </Link>
             <div className="flex items-center space-x-2 mt-1">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${positionColors[position]}`}>
                 {position} - {positionNames[position]}

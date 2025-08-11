@@ -1,0 +1,31 @@
+game_id,week,home_team,away_team,winner,loser
+1001,1,Yinzers,Redeem Team,Yinzers,Redeem Team
+1002,1,Plum's Finest,Nate & Friends,Plum's Finest,Nate & Friends
+1003,1,PA Lakers,Indiana Bones & the Womb Raiders,PA Lakers,Indiana Bones & the Womb Raiders
+1004,1,PGH Elite,Diddy Party,PGH Elite,Diddy Party
+1005,1,Treyway,Monroeville Monstars,Treyway,Monroeville Monstars
+1006,1,Beltzboyz,Diddy's Lawyers,Beltzboyz,Diddy's Lawyers
+1007,2,Treyway,Indiana Bones & the Womb Raiders,Treyway,Indiana Bones & the Womb Raiders
+1008,2,Diddy's Lawyers,Redeem Team,Diddy's Lawyers,Redeem Team
+1009,2,Beltzboyz,Nate & Friends,Beltzboyz,Nate & Friends
+1010,2,Diddy Party,PGH Elite,Diddy Party,PGH Elite
+1011,2,Yinzers,PA Lakers,Yinzers,PA Lakers
+1012,2,Plum's Finest,Monroeville Monstars,Plum's Finest,Monroeville Monstars
+1013,3,PGH Elite,Indiana Bones & the Womb Raiders,PGH Elite,Indiana Bones & the Womb Raiders
+1014,3,PA Lakers,Nate & Friends,PA Lakers,Nate & Friends
+1015,3,Plum's Finest,Treyway,Plum's Finest,Treyway
+1016,3,Beltzboyz,Monroeville Monstars,Beltzboyz,Monroeville Monstars
+1017,3,Diddy's Lawyers,Diddy Party,Diddy's Lawyers,Diddy Party
+1018,3,Yinzers,Redeem Team,Yinzers,Redeem Team
+1019,4,Redeem Team,Monroeville Monstars,Redeem Team,Monroeville Monstars
+1020,4,PGH Elite,PA Lakers,PGH Elite,PA Lakers
+1021,4,Yinzers,Diddy Party,Yinzers,Diddy Party
+1022,4,Plum's Finest,Nate & Friends,Plum's Finest,Nate & Friends
+1023,4,Treyway,Indiana Bones & the Womb Raiders,Treyway,Indiana Bones & the Womb Raiders
+1024,4,Beltzboyz,Diddy's Lawyers,Beltzboyz,Diddy's Lawyers
+1025,5,Indiana Bones & the Womb Raiders,Nate & Friends,Indiana Bones & the Womb Raiders,Nate & Friends
+1026,5,Diddy Party,Redeem Team,Diddy Party,Redeem Team
+1027,5,Monroeville Monstars,PGH Elite,Monroeville Monstars,PGH Elite
+1028,5,Diddy's Lawyers,Treyway,Diddy's Lawyers,Treyway
+1029,5,PA Lakers,Beltzboyz,PA Lakers,Beltzboyz
+1030,5,Yinzers,Plum's Finest,Yinzers,Plum's Finest

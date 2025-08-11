@@ -1,5 +1,6 @@
 package cammossleague.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,12 +23,18 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "firebase_uid", unique = true, nullable = false, length = 128)
+    @Column(name = "firebase_uid", unique = true, length = 128)
     private String firebaseUid;
     
+    @Column(unique = true, length = 50)
+    private String username;
+    
+    @JsonIgnore
+    @Column(name = "password_hash")
+    private String passwordHash;
+    
     @Email
-    @NotBlank
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = true)
     private String email;
     
     @NotBlank
@@ -50,6 +57,10 @@ public class User {
     @Builder.Default
     private Boolean isFreeAgent = false;
     
+    @Column(name = "is_active")
+    @Builder.Default
+    private Boolean isActive = true;
+    
     @Column(name = "profile_image_url", length = 500)
     private String profileImageUrl;
     
@@ -70,16 +81,19 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Player> players;
     
     @OneToMany(mappedBy = "captain", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Team> captainTeams;
     
     @OneToMany(mappedBy = "coach", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Team> coachTeams;
     
     public enum Role {
@@ -92,5 +106,41 @@ public class User {
     
     public String getDisplayName() {
         return getFullName();
+    }
+    
+    // Custom constructor for basic user creation with required fields only
+    public User(String firstName, String lastName, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.role = Role.PLAYER;
+        this.isActive = true;
+        this.isFreeAgent = false;
+    }
+    
+    // Constructor for user creation with username/password (registration)
+    public User(String username, String passwordHash, String email, String firstName, String lastName) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = Role.PLAYER;
+        this.isActive = true;
+        this.isFreeAgent = false;
+    }
+    
+    // Constructor with optional fields for complete user creation
+    public User(String username, String passwordHash, String email, String firstName, String lastName, 
+                String phone, Role role) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+        this.role = role != null ? role : Role.PLAYER;
+        this.isActive = true;
+        this.isFreeAgent = false;
     }
 }

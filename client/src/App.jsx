@@ -10,7 +10,12 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 import HomePage from './pages/HomePage'
 import LeaguePage from './pages/LeaguePage'
 import TeamsPage from './pages/TeamsPage'
+import TeamDetailPage from './pages/TeamDetailPage'
+import TeamSchedulePage from './pages/TeamSchedulePage'
 import PlayersPage from './pages/PlayersPage'
+import PlayerDetailPage from './pages/PlayerDetailPage'
+import PlayerSchedulePage from './pages/PlayerSchedulePage'
+import SchedulePage from './pages/SchedulePage'
 import BracketPage from './pages/BracketPage'
 import HistoryPage from './pages/HistoryPage'
 import FreeAgentsPage from './pages/FreeAgentsPage'
@@ -43,8 +48,13 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/league" element={<LeaguePage />} />
+          <Route path="/schedule" element={<SchedulePage />} />
           <Route path="/teams" element={<TeamsPage />} />
+          <Route path="/teams/:id" element={<TeamDetailPage />} />
+          <Route path="/teams/:id/schedule" element={<TeamSchedulePage />} />
           <Route path="/players" element={<PlayersPage />} />
+          <Route path="/players/:id" element={<PlayerDetailPage />} />
+          <Route path="/players/:id/schedule" element={<PlayerSchedulePage />} />
           <Route path="/bracket" element={<BracketPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/free-agents" element={<FreeAgentsPage />} />

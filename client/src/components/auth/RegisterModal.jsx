@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
   const { register, loginWithGoogle } = useAuth()
   const [formData, setFormData] = useState({
+    username: '',
     firstName: '',
     lastName: '',
     email: '',
@@ -24,6 +25,12 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
   const validateStep1 = () => {
     const newErrors = {}
     
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required'
+    } else if (formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters'
+    }
+    
     if (!formData.firstName.trim()) {
       newErrors.firstName = 'First name is required'
     }
@@ -32,9 +39,7 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
       newErrors.lastName = 'Last name is required'
     }
     
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required'
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid'
     }
     
@@ -63,18 +68,20 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
     setLoading(true)
 
     try {
-      const userDetails = {
+      const userData = {
+        username: formData.username,
+        password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
-        phone: formData.phone || null,
-        emergencyContactName: formData.emergencyContactName || null,
-        emergencyContactPhone: formData.emergencyContactPhone || null
+        email: formData.email || null,
+        phone: formData.phone || null
       }
 
-      await register(formData.email, formData.password, userDetails)
+      await register(userData)
       toast.success('Welcome to the league!')
       onClose()
       setFormData({
+        username: '',
         firstName: '',
         lastName: '',
         email: '',
@@ -90,12 +97,10 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
       
       let errorMessage = 'Registration failed. Please try again.'
       
-      if (error.code === 'auth/email-already-in-use') {
-        errorMessage = 'An account with this email already exists.'
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage = 'Password is too weak.'
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Invalid email address.'
+      if (error.response?.status === 400) {
+        errorMessage = error.response.data || 'Registration failed. Please check your information.'
+      } else if (error.response?.data) {
+        errorMessage = error.response.data
       }
       
       toast.error(errorMessage)
@@ -216,8 +221,28 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
                 </div>
 
                 <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    required
+                    className="form-input"
+                    placeholder="johnsmith"
+                    disabled={loading}
+                  />
+                  {errors.username && (
+                    <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+                  )}
+                </div>
+
+                <div>
                   <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+                    Email Address <span className="text-gray-400">(optional)</span>
                   </label>
                   <input
                     type="email"
@@ -225,7 +250,6 @@ export default function RegisterModal({ isOpen, onClose, onSwitchToLogin }) {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    required
                     className="form-input"
                     placeholder="john.smith@email.com"
                     disabled={loading}

@@ -1,5 +1,6 @@
 package cammossleague.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,10 +21,12 @@ public class PlayerTeam {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id", nullable = false)
+    @JsonIgnore
     private Player player;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
+    @JsonIgnore
     private Team team;
     
     @Enumerated(EnumType.STRING)
@@ -39,6 +42,7 @@ public class PlayerTeam {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approved_by_user_id")
+    @JsonIgnore
     private User approvedBy;
     
     @Column(columnDefinition = "TEXT")

@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 export default function LoginModal({ isOpen, onClose, onSwitchToRegister }) {
   const { login, loginWithGoogle } = useAuth()
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   })
   const [loading, setLoading] = useState(false)
@@ -20,25 +20,19 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }) {
     setLoading(true)
 
     try {
-      await login(formData.email, formData.password)
+      await login(formData.username, formData.password)
       toast.success('Welcome back!')
       onClose()
-      setFormData({ email: '', password: '' })
+      setFormData({ username: '', password: '' })
     } catch (error) {
       console.error('Login error:', error)
       
-      let errorMessage = 'Login failed. Please try again.'
+      let errorMessage = 'Invalid username or password.'
       
-      if (error.code === 'auth/user-not-found') {
-        errorMessage = 'No account found with this email address.'
-      } else if (error.code === 'auth/wrong-password') {
-        errorMessage = 'Incorrect password.'
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Invalid email address.'
-      } else if (error.code === 'auth/user-disabled') {
-        errorMessage = 'This account has been disabled.'
-      } else if (error.code === 'auth/too-many-requests') {
-        errorMessage = 'Too many failed attempts. Please try again later.'
+      if (error.response?.status === 401) {
+        errorMessage = 'Invalid username or password.'
+      } else if (error.response?.data) {
+        errorMessage = error.response.data
       }
       
       toast.error(errorMessage)
@@ -97,22 +91,22 @@ export default function LoginModal({ isOpen, onClose, onSwitchToRegister }) {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                Username
               </label>
               <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleInputChange}
                 required
                 className="form-input"
-                placeholder="Enter your email"
+                placeholder="Enter your username"
                 disabled={loading}
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username}</p>
               )}
             </div>
 

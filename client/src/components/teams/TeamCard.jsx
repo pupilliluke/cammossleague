@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom'
 import { 
   UserGroupIcon, 
   TrophyIcon, 
-  ChartBarIcon,
-  MapPinIcon 
+  ChartBarIcon 
 } from '@heroicons/react/24/outline'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -43,15 +42,11 @@ export default function TeamCard({ team, showJoinButton = false }) {
           )}
           
           <div className="flex-1">
-            <h3 className="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors">
-              {team.name}
-            </h3>
-            {team.city && (
-              <div className="flex items-center space-x-1 text-gray-500 text-sm">
-                <MapPinIcon className="h-4 w-4" />
-                <span>{team.city}</span>
-              </div>
-            )}
+            <Link to={`/teams/${team.id}`}>
+              <h3 className="text-xl font-bold text-gray-900 hover:text-primary-600 transition-colors cursor-pointer">
+                {team.name}
+              </h3>
+            </Link>
             
             {/* Team Colors */}
             {(team.primaryColor || team.secondaryColor) && (

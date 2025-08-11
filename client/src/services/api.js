@@ -38,6 +38,7 @@ api.interceptors.response.use(
 export const seasonService = {
   getAllSeasons: () => api.get('/seasons').then(res => res.data),
   getActiveSeason: () => api.get('/seasons/active').then(res => res.data),
+  getMostRecentSeason: () => api.get('/seasons/recent').then(res => res.data),
   getSeasonById: (id) => api.get(`/seasons/${id}`).then(res => res.data),
   getSeasonStandings: (id) => api.get(`/seasons/${id}/standings`).then(res => res.data),
   createSeason: (seasonData) => api.post('/seasons', seasonData).then(res => res.data),
@@ -49,6 +50,9 @@ export const seasonService = {
 export const teamService = {
   ...createCrudService('/teams'),
   getAllTeams: (params = {}) => api.get('/teams', { params }).then(res => res.data),
+  getTeamsBySeason: (seasonId) => api.get(`/teams/season/${seasonId}`).then(res => res.data),
+  getTeamsByYear: (year) => api.get(`/teams/year/${year}`).then(res => res.data),
+  getTeamStandings: (seasonId) => api.get(`/teams/season/${seasonId}/standings`).then(res => res.data),
   getTeamRoster: (id) => api.get(`/teams/${id}/roster`).then(res => res.data),
   getTeamSchedule: (id) => api.get(`/teams/${id}/schedule`).then(res => res.data),
   getTeamStats: (id) => api.get(`/teams/${id}/stats`).then(res => res.data),
@@ -59,7 +63,12 @@ export const teamService = {
 export const playerService = {
   ...createCrudService('/players'),
   getAllPlayers: (params = {}) => api.get('/players', { params }).then(res => res.data),
+  getPlayersBySeason: (seasonId) => api.get(`/players/season/${seasonId}`).then(res => res.data),
+  getActivePlayersBySeason: (seasonId) => api.get(`/players/season/${seasonId}/active`).then(res => res.data),
+  getPlayersByYear: (year) => api.get(`/players/year/${year}`).then(res => res.data),
+  getPlayersByTeamAndSeason: (teamId, seasonId) => api.get(`/players/team/${teamId}/season/${seasonId}`).then(res => res.data),
   getPlayerStats: (id) => api.get(`/players/${id}/stats`).then(res => res.data),
+  getPlayerTeamHistory: (id) => api.get(`/players/${id}/team-history`).then(res => res.data),
   getFreeAgents: () => api.get('/players/free-agents').then(res => res.data),
   joinTeam: (playerId, teamId) => api.post(`/players/${playerId}/join-team`, { teamId }).then(res => res.data),
 }
@@ -73,6 +82,29 @@ export const gameService = {
   getRecentResults: () => api.get('/public/games/results').then(res => res.data),
   submitResult: (gameId, resultData) => api.post(`/games/${gameId}/result`, resultData).then(res => res.data),
   updateResult: (gameId, resultData) => api.put(`/games/${gameId}/result`, resultData).then(res => res.data),
+}
+
+// ===== SCHEDULE SERVICES =====
+export const scheduleService = {
+  getAllGames: () => api.get('/schedule').then(res => res.data),
+  getGameById: (id) => api.get(`/schedule/${id}`).then(res => res.data),
+  getGamesBySeason: (seasonId) => api.get(`/schedule/season/${seasonId}`).then(res => res.data),
+  getGamesByTeam: (teamId) => api.get(`/schedule/team/${teamId}`).then(res => res.data),
+  getGamesByTeamAndSeason: (teamId, seasonId) => api.get(`/schedule/team/${teamId}/season/${seasonId}`).then(res => res.data),
+  getGamesByWeek: (seasonId, weekNumber) => api.get(`/schedule/week/${seasonId}/${weekNumber}`).then(res => res.data),
+  getUpcomingGames: () => api.get('/schedule/upcoming').then(res => res.data),
+  getUpcomingGamesBySeason: (seasonId) => api.get(`/schedule/upcoming/season/${seasonId}`).then(res => res.data),
+  getCompletedGamesBySeason: (seasonId) => api.get(`/schedule/completed/season/${seasonId}`).then(res => res.data),
+  getGamesByType: (seasonId, gameType) => api.get(`/schedule/type/${seasonId}/${gameType}`).then(res => res.data),
+  getSeasonStats: (seasonId) => api.get(`/schedule/stats/season/${seasonId}`).then(res => res.data),
+}
+
+// ===== LEAGUE STATISTICS SERVICES =====
+export const leagueService = {
+  getLeagueStats: (params = {}) => api.get('/league/stats', { params }).then(res => res.data),
+  getSeasonStats: (seasonId) => api.get(`/league/season/${seasonId}/stats`).then(res => res.data),
+  getYearStats: (year) => api.get(`/league/year/${year}/stats`).then(res => res.data),
+  getAllSeasonsWithStats: () => api.get('/league/seasons').then(res => res.data),
 }
 
 // ===== PUBLIC SERVICES =====

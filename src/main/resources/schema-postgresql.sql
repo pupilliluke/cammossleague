@@ -33,8 +33,10 @@ CREATE TYPE update_type AS ENUM ('NEWS', 'ANNOUNCEMENT', 'SCHEDULE_CHANGE', 'PLA
 -- =============================================
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
-    firebase_uid VARCHAR(128) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
+    firebase_uid VARCHAR(128) UNIQUE,
+    username VARCHAR(50) UNIQUE,
+    password_hash VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
@@ -50,6 +52,7 @@ CREATE TABLE users (
 
 -- Create indexes
 CREATE INDEX idx_users_firebase_uid ON users(firebase_uid);
+CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_free_agent ON users(is_free_agent);

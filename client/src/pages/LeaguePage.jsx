@@ -1,10 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSeason } from '../contexts/SeasonContext'
-import { publicService, gameService, teamService } from '../services/api'
+import { publicService, gameService, teamService, leagueService } from '../services/api'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 import GameCard from '../components/league/GameCard'
 import StandingsTable from '../components/league/StandingsTable'
 import LeagueUpdates from '../components/league/LeagueUpdates'
+import ScheduleSection from '../components/league/ScheduleSection'
+import SeasonDropdown from '../components/common/SeasonDropdown'
 import { 
   CalendarIcon, 
   TrophyIcon, 
@@ -13,44 +15,44 @@ import {
 } from '@heroicons/react/24/outline'
 
 export default function LeaguePage() {
-  const { activeSeason, activeSeasonLoading } = useSeason()
+  const { selectedSeason, allSeasonsLoading } = useSeason()
 
-  // Fetch dashboard data
-  const { data: dashboardData, isLoading: dashboardLoading } = useQuery({
-    queryKey: ['dashboard', 'public'],
-    queryFn: publicService.getDashboard,
-    enabled: !!activeSeason,
+  // Fetch league stats for selected season
+  const { data: leagueStats, isLoading: leagueStatsLoading } = useQuery({
+    queryKey: ['league-stats', selectedSeason?.id],
+    queryFn: () => leagueService.getLeagueStats({ seasonId: selectedSeason.id }),
+    enabled: !!selectedSeason,
   })
 
   // Fetch upcoming games
   const { data: upcomingGames = [], isLoading: upcomingLoading } = useQuery({
     queryKey: ['games', 'upcoming'],
     queryFn: gameService.getUpcomingGames,
-    enabled: !!activeSeason,
+    enabled: !!selectedSeason,
   })
 
   // Fetch recent results
   const { data: recentResults = [], isLoading: resultsLoading } = useQuery({
     queryKey: ['games', 'recent-results'],
     queryFn: gameService.getRecentResults,
-    enabled: !!activeSeason,
+    enabled: !!selectedSeason,
   })
 
   // Fetch standings
   const { data: standings = [], isLoading: standingsLoading } = useQuery({
-    queryKey: ['standings', activeSeason?.id],
-    queryFn: () => teamService.getAllTeams({ seasonId: activeSeason.id }),
-    enabled: !!activeSeason,
+    queryKey: ['standings', selectedSeason?.id],
+    queryFn: () => teamService.getAllTeams({ seasonId: selectedSeason.id, orderByStandings: true }),
+    enabled: !!selectedSeason,
   })
 
   // Fetch league updates
   const { data: updates = [], isLoading: updatesLoading } = useQuery({
     queryKey: ['updates', 'public'],
     queryFn: () => publicService.getLeagueUpdates({ limit: 5 }),
-    enabled: !!activeSeason,
+    enabled: !!selectedSeason,
   })
 
-  if (activeSeasonLoading || dashboardLoading) {
+  if (allSeasonsLoading || leagueStatsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner size="lg" />
@@ -58,13 +60,13 @@ export default function LeaguePage() {
     )
   }
 
-  if (!activeSeason) {
+  if (!selectedSeason) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <TrophyIcon className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Active Season</h2>
-          <p className="text-gray-600">Check back soon for the next season!</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">No Season Selected</h2>
+          <p className="text-gray-600">Please select a season to view league information.</p>
         </div>
       </div>
     )
@@ -75,44 +77,49 @@ export default function LeaguePage() {
       {/* Hero Section */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {activeSeason.name} Dashboard
-            </h1>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              {activeSeason.description}
-            </p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                {selectedSeason.name} Dashboard
+              </h1>
+              <p className="text-lg text-gray-600 max-w-3xl">
+                {selectedSeason.description}
+              </p>
+            </div>
+            <div className="w-full md:w-80">
+              <SeasonDropdown />
+            </div>
           </div>
 
           {/* Quick Stats */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <UserGroupIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {dashboardData?.totalTeams || standings.length || '0'}
+                {leagueStats?.totalTeams || standings.length || '0'}
               </div>
-              <div className="text-sm text-gray-600">Active Teams</div>
+              <div className="text-sm text-gray-600">Teams</div>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <PlayIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {dashboardData?.gamesPlayed || '0'}
+                {leagueStats?.totalPlayers || '0'}
               </div>
-              <div className="text-sm text-gray-600">Games Played</div>
+              <div className="text-sm text-gray-600">Players</div>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <CalendarIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {upcomingGames.length || '0'}
+                {leagueStats?.gamesPlayed || '0'}
               </div>
-              <div className="text-sm text-gray-600">Upcoming Games</div>
+              <div className="text-sm text-gray-600">Games Played</div>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <TrophyIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
               <div className="text-2xl font-bold text-gray-900">
-                {dashboardData?.weeksRemaining || '0'}
+                {selectedSeason?.year || 'N/A'}
               </div>
-              <div className="text-sm text-gray-600">Weeks Remaining</div>
+              <div className="text-sm text-gray-600">Season Year</div>
             </div>
           </div>
         </div>
@@ -199,6 +206,11 @@ export default function LeaguePage() {
                   </div>
                 </div>
               )}
+            </section>
+
+            {/* Schedule Section */}
+            <section>
+              <ScheduleSection selectedSeason={selectedSeason} />
             </section>
           </div>
 

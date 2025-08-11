@@ -52,6 +52,10 @@
     @apply btn border-transparent bg-transparent text-gray-600 hover:bg-gray-100 shadow-none;
   }
   
+  .btn-sm {
+    @apply btn px-3 py-1.5 text-xs;
+  }
+  
   /* Card Components */
   .card {
     @apply bg-white rounded-lg shadow-sm border border-gray-200;
@@ -78,8 +82,12 @@
     @apply form-input;
   }
   
-  .form-select {
+  .form-select, .select {
     @apply form-input;
+  }
+  
+  .select-sm {
+    @apply select px-3 py-1 text-sm;
   }
   
   .form-checkbox {

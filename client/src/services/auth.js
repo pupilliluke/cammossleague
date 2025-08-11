@@ -1,27 +1,55 @@
 import api from './api'
 
 export const authService = {
-  // Verify Firebase token and get/create user
-  verifyToken: (idToken) => 
-    api.post('/auth/login', { idToken }).then(res => res.data),
+  // Username/Password login
+  login: (username, password) => 
+    api.post('/auth/login', { username, password }).then(res => res.data),
   
   // Register new user
-  register: (userData, idToken) => 
-    api.post('/auth/register', { ...userData, idToken }).then(res => res.data),
+  register: (userData) => 
+    api.post('/auth/register', userData).then(res => res.data),
   
-  // Get current user profile
-  getProfile: () => 
-    api.get('/auth/profile').then(res => res.data),
+  // Get current user info
+  getCurrentUser: () => 
+    api.get('/auth/me').then(res => res.data),
   
-  // Update user profile
-  updateProfile: (profileData) => 
-    api.put('/auth/profile', profileData).then(res => res.data),
+  // Dashboard data (secure, role-based)
+  getDashboard: () => 
+    api.get('/secure/dashboard').then(res => res.data),
   
-  // Refresh token
-  refreshToken: () => 
-    api.post('/auth/refresh').then(res => res.data),
+  // Get my team info
+  getMyTeam: () => 
+    api.get('/secure/my-team').then(res => res.data),
+  
+  // Get team details (if authorized)
+  getTeamDetails: (teamId) => 
+    api.get(`/secure/teams/${teamId}`).then(res => res.data),
+  
+  // Get player details (if authorized)
+  getPlayerDetails: (playerId) => 
+    api.get(`/secure/players/${playerId}`).then(res => res.data),
+  
+  // Firebase token verification (for migration users)
+  verifyToken: (idToken) => 
+    api.post('/auth/firebase-login', { idToken }).then(res => res.data),
+  
+  // Set auth token in headers
+  setAuthToken: (token) => {
+    if (token) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      localStorage.setItem('token', token)
+    } else {
+      delete api.defaults.headers.common['Authorization']
+      localStorage.removeItem('token')
+    }
+  },
+  
+  // Get stored token
+  getToken: () => localStorage.getItem('token'),
   
   // Logout
-  logout: () => 
-    api.post('/auth/logout').then(res => res.data),
+  logout: () => {
+    authService.setAuthToken(null)
+    return Promise.resolve()
+  }
 }

@@ -1,103 +1,39 @@
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useSeason } from '../contexts/SeasonContext'
+import { teamService } from '../services/api'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 import TeamCard from '../components/teams/TeamCard'
+import SeasonDropdown from '../components/common/SeasonDropdown'
 import { 
   MagnifyingGlassIcon,
   UserGroupIcon,
-  ChartBarIcon
+  ChartBarIcon,
+  CalendarIcon
 } from '@heroicons/react/24/outline'
-
-// Mock data for when API is unavailable
-const mockTeams = [
-  {
-    id: 1,
-    name: "Thunder Hawks",
-    city: "Downtown",
-    primaryColor: "#1E40AF",
-    secondaryColor: "#FFFFFF",
-    wins: 5,
-    losses: 1,
-    pointsFor: 468,
-    pointsAgainst: 421,
-    description: "A powerhouse team known for fast breaks and defensive intensity."
-  },
-  {
-    id: 2,
-    name: "Fire Dragons", 
-    city: "Eastside",
-    primaryColor: "#DC2626",
-    secondaryColor: "#FBBF24",
-    wins: 4,
-    losses: 2,
-    pointsFor: 445,
-    pointsAgainst: 432,
-    description: "Young and energetic squad with explosive offensive capabilities."
-  },
-  {
-    id: 3,
-    name: "Lightning Bolts",
-    city: "Westside", 
-    primaryColor: "#7C3AED",
-    secondaryColor: "#F3E8FF",
-    wins: 3,
-    losses: 3,
-    pointsFor: 428,
-    pointsAgainst: 435,
-    description: "Strategic team that excels in half-court sets and team chemistry."
-  },
-  {
-    id: 4,
-    name: "Steel Warriors",
-    city: "Northside",
-    primaryColor: "#374151", 
-    secondaryColor: "#9CA3AF",
-    wins: 3,
-    losses: 3,
-    pointsFor: 415,
-    pointsAgainst: 441,
-    description: "Defensive-minded team that grinds out tough victories."
-  },
-  {
-    id: 5,
-    name: "Crimson Phoenixes",
-    city: "Southside",
-    primaryColor: "#B91C1C",
-    secondaryColor: "#FEF2F2", 
-    wins: 2,
-    losses: 4,
-    pointsFor: 398,
-    pointsAgainst: 456,
-    description: "Rising team with young talent and determination."
-  },
-  {
-    id: 6,
-    name: "Golden Eagles",
-    city: "Uptown",
-    primaryColor: "#D97706",
-    secondaryColor: "#FEF3C7",
-    wins: 1, 
-    losses: 5,
-    pointsFor: 379,
-    pointsAgainst: 483,
-    description: "Rebuilding franchise with focus on development."
-  }
-]
-
-const mockSeason = {
-  id: 1,
-  name: "Summer 2025 League",
-  year: 2025,
-  isActive: true,
-  description: "The premier summer basketball league featuring competitive play and community spirit."
-}
 
 export default function TeamsPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState('winPercentage')
   const [filterBy, setFilterBy] = useState('all')
   
-  const teams = mockTeams
-  const activeSeason = mockSeason
+  const { selectedSeason, allSeasonsLoading } = useSeason()
+  
+  // Fetch teams from API
+  const { data: teams = [], isLoading: teamsLoading } = useQuery({
+    queryKey: ['teams', selectedSeason?.id],
+    queryFn: () => teamService.getAllTeams({ seasonId: selectedSeason?.id, orderByStandings: true }),
+    enabled: !!selectedSeason,
+  })
+
+  // Loading state
+  if (allSeasonsLoading || teamsLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <LoadingSpinner />
+      </div>
+    )
+  }
 
   // Filter and sort teams
   const filteredTeams = teams
@@ -141,21 +77,18 @@ export default function TeamsPage() {
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {activeSeason?.name} Teams
-            </h1>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <p className="text-blue-800 font-medium">
-                🏀 Development Mode: Showing Mock Data
-              </p>
-              <p className="text-blue-600 text-sm mt-1">
-                Backend API at localhost:8080 is not accessible. Using sample team data for demonstration.
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div className="text-center md:text-left mb-4 md:mb-0">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                {selectedSeason?.name} Teams
+              </h1>
+              <p className="text-lg text-gray-600 max-w-3xl">
+                Explore all teams competing in this season. View records, stats, and team information.
               </p>
             </div>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore all teams competing in the current season. View records, stats, and team information.
-            </p>
+            <div className="w-full md:w-80">
+              <SeasonDropdown />
+            </div>
           </div>
 
           {/* Quick Stats */}
@@ -167,7 +100,7 @@ export default function TeamsPage() {
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <ChartBarIcon className="h-8 w-8 text-primary-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{teamStats.total}</div>
+              <div className="text-2xl font-bold text-gray-900">{teamStats.active}</div>
               <div className="text-sm text-gray-600">Active Teams</div>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">

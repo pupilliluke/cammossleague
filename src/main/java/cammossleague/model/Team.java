@@ -1,6 +1,7 @@
 package cammossleague.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -15,11 +16,13 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Team extends BaseEntity {
     
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "season_id", nullable = false)
+    @JsonIgnore
     private Season season;
     
     @NotBlank
@@ -40,10 +43,12 @@ public class Team extends BaseEntity {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "captain_user_id")
+    @JsonIgnore
     private User captain;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coach_user_id")
+    @JsonIgnore
     private User coach;
     
     @Column(nullable = false)
@@ -86,9 +91,6 @@ public class Team extends BaseEntity {
     private List<Game> awayGames;
     
     public String getDisplayName() {
-        if (city != null && !city.trim().isEmpty()) {
-            return city + " " + name;
-        }
         return name;
     }
     

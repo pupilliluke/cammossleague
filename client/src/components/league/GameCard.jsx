@@ -3,7 +3,7 @@ import { CalendarIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/outline
 
 export default function GameCard({ game, showResult = false }) {
   const gameDateTime = parseISO(`${game.gameDate}T${game.gameTime}`)
-  const isCompleted = game.isCompleted && game.result
+  const isCompleted = game.isCompleted && game.gameResult
   const isPast = new Date() > gameDateTime && !isCompleted
 
   return (
@@ -51,18 +51,15 @@ export default function GameCard({ game, showResult = false }) {
               )}
               <div>
                 <div className="font-medium text-gray-900">{game.awayTeam.name}</div>
-                {game.awayTeam.city && (
-                  <div className="text-xs text-gray-500">{game.awayTeam.city}</div>
-                )}
               </div>
             </div>
             {showResult && isCompleted && (
               <div className={`text-lg font-bold ${
-                game.result.winningTeam?.id === game.awayTeam.id 
+                game.gameResult.winningTeam?.id === game.awayTeam.id 
                   ? 'text-green-600' 
                   : 'text-gray-600'
               }`}>
-                {game.result.awayTeamScore}
+                {game.gameResult.awayTeamScore}
               </div>
             )}
           </div>
@@ -91,18 +88,15 @@ export default function GameCard({ game, showResult = false }) {
               )}
               <div>
                 <div className="font-medium text-gray-900">{game.homeTeam.name}</div>
-                {game.homeTeam.city && (
-                  <div className="text-xs text-gray-500">{game.homeTeam.city}</div>
-                )}
               </div>
             </div>
             {showResult && isCompleted && (
               <div className={`text-lg font-bold ${
-                game.result.winningTeam?.id === game.homeTeam.id 
+                game.gameResult.winningTeam?.id === game.homeTeam.id 
                   ? 'text-green-600' 
                   : 'text-gray-600'
               }`}>
-                {game.result.homeTeamScore}
+                {game.gameResult.homeTeamScore}
               </div>
             )}
           </div>
@@ -137,18 +131,18 @@ export default function GameCard({ game, showResult = false }) {
           {/* Game Result Details */}
           {showResult && isCompleted && (
             <div className="mt-2 text-xs text-gray-600">
-              {game.result.overtime && (
+              {game.gameResult.overtime && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 mr-2">
                   OT
                 </span>
               )}
-              {game.result.forfeit && (
+              {game.gameResult.forfeit && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 mr-2">
                   Forfeit
                 </span>
               )}
-              {game.result.notes && (
-                <span className="text-gray-500">{game.result.notes}</span>
+              {game.gameResult.notes && (
+                <span className="text-gray-500">{game.gameResult.notes}</span>
               )}
             </div>
           )}

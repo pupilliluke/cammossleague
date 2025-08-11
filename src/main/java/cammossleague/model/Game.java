@@ -1,5 +1,6 @@
 package cammossleague.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,21 +16,22 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Game {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "season_id", nullable = false)
     private Season season;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "home_team_id", nullable = false)
     private Team homeTeam;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "away_team_id", nullable = false)
     private Team awayTeam;
     
@@ -67,9 +69,11 @@ public class Game {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
-    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private GameResult result;
+    @Column(name = "home_score")
+    private Integer homeScore;
+    
+    @Column(name = "away_score")
+    private Integer awayScore;
     
     public enum GameType {
         REGULAR("Regular Season"),
@@ -104,7 +108,7 @@ public class Game {
     }
     
     public boolean hasResult() {
-        return result != null;
+        return homeScore != null && awayScore != null;
     }
     
     public boolean isPastGame() {
