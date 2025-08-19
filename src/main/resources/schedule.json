@@ -1,0 +1,69 @@
+{
+    "Sunday August 10th Schedule": [
+        {
+            "time": "6:00",
+            "team1": "PALakers",
+            "team2": "Indiana Bones & The Womb Raiders",
+            "ref": [
+                "john",
+                "rocco"
+            ]
+        },
+        {
+            "time": "7:00",
+            "team1": "PGH Elite",
+            "team2": "Nate & Friends",
+            "ref": [
+                "john",
+                "rocco"
+            ]
+        },
+        {
+            "time": "8:00",
+            "team1": "Diddy Party",
+            "team2": "Redeem Team",
+            "ref": [
+                "john",
+                "rocco"
+            ]
+        }
+    ],
+    "Sunday August 17th Schedule": [
+        {
+            "time": "6:30",
+            "team1": "Yinzers",
+            "team2": "Diddy Party",
+            "ref": [
+                "Rocco"
+            ]
+        },
+        {
+            "time": "6:30",
+            "team1": "Treyway",
+            "team2": "PA Lakers",
+            "ref": [
+                "Mark"
+            ]
+        },
+        {
+            "time": "7:30",
+            "team1": "Plum's Finest",
+            "team2": "PGH Elite",
+            "ref": [
+                "John"
+            ]
+        },
+        {
+            "time": "7:30",
+            "team1": "Diddy's lawyers",
+            "team2": "Beltzboys",
+            "ref": [
+                "Mark"
+            ]
+        }
+    ],
+    "Playoff Matchups": [
+        "#1/#8 vs #4/#5",
+        "#3/#6 vs #2/#7"
+    ]
+}
