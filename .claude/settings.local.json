@@ -93,7 +93,9 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -h db.xpdnjopqyhlodumnrxkl.supabase.co -p 5432 -U postgres -d postgres --set=sslmode=disable -c \"SELECT 1\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -U postgres -h localhost -d \"cammossleague-local\" -c \"\\copy teams TO ''teams_export.csv'' WITH CSV HEADER\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -U postgres -h localhost -d \"cammossleague-local\" -c \"SELECT * FROM seasons\")",
-      "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -U postgres -h localhost -d \"cammossleague-local\" -c \"\\copy seasons TO ''seasons_export.csv'' WITH CSV HEADER\")"
+      "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -U postgres -h localhost -d \"cammossleague-local\" -c \"\\copy seasons TO ''seasons_export.csv'' WITH CSV HEADER\")",
+      "Bash(git fetch:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
