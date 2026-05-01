@@ -45,6 +45,7 @@ client/.env.*
 deployment/.env*
 src/main/resources/application-*.properties
 !src/main/resources/application.properties
+!src/main/resources/application-production.properties
 !client/.env.example
 !client/.env.production.example
 !deployment/.env.neon.example
