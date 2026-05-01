@@ -58,9 +58,11 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Static resources and common endpoints
-                .requestMatchers("/", "/favicon.ico", "/robots.txt").permitAll()
-                .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/public/**").permitAll()
+                .requestMatchers("/", "/favicon.ico", "/robots.txt", "/manifest.json", "/index.html").permitAll()
+                .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/public/**", "/assets/**").permitAll()
                 .requestMatchers("/webjars/**").permitAll()
+                // SPA deep-link fallback paths (anything without a file extension that isn't /api, etc.)
+                .requestMatchers("/{path:[^\\.]*}").permitAll()
                 // API endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()

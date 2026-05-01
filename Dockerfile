@@ -1,35 +1,46 @@
-# Multi-stage build for Spring Boot application
-FROM eclipse-temurin:21-jdk-alpine AS build
+# --- Stage 1: build the React frontend ---
+FROM node:20-alpine AS client-build
+
+WORKDIR /client
+
+COPY client/package.json client/package-lock.json* ./
+RUN npm ci
+
+COPY client/ ./
+RUN npm run build
+
+# --- Stage 2: build the Spring Boot backend (with frontend bundled) ---
+FROM eclipse-temurin:21-jdk-alpine AS server-build
 
 WORKDIR /app
+
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
+RUN chmod +x ./mvnw && ./mvnw -B dependency:go-offline
+
 COPY src ./src
 
-# Build the application
-RUN chmod +x ./mvnw && ./mvnw clean package -DskipTests
+# Drop the built SPA into Spring Boot's static resources before packaging
+COPY --from=client-build /client/dist/ ./src/main/resources/static/
 
-# Runtime stage
+RUN ./mvnw -B clean package -DskipTests
+
+# --- Stage 3: runtime ---
 FROM eclipse-temurin:21-jre-alpine AS runtime
 
 WORKDIR /app
 
-# Install curl for health checks
-RUN apk add --no-cache curl
-
-# Copy the JAR file from build stage
-COPY --from=build /app/target/*.jar app.jar
-
-# Create non-root user
-RUN addgroup -g 1001 -S appuser && \
+RUN apk add --no-cache curl && \
+    addgroup -g 1001 -S appuser && \
     adduser -u 1001 -S appuser -G appuser
+
+COPY --from=server-build /app/target/*.jar app.jar
 
 USER appuser
 
 EXPOSE 8080
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/actuator/health || exit 1
+  CMD curl -f http://localhost:${PORT:-8080}/actuator/health || exit 1
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java -jar app.jar"]

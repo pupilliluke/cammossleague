@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.vscode
+.history
+target
+**/node_modules
+client/dist
+client/.env
+client/.env.*
+!client/.env.example
+!client/.env.production.example
+.env
+.env.*
+*.md
+!README.md
+deployment

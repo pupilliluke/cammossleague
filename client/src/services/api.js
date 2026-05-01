@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { createCrudService, createAdminCrudService } from './crudServiceFactory.js'
 
-// Create axios instance
+// In production the SPA is served by Spring Boot, so /api is same-origin.
+// In dev, Vite (5173) talks to Spring Boot (8080) — use VITE_API_URL or fall back to localhost.
+const defaultBaseURL = import.meta.env.PROD ? '/api' : 'http://localhost:8080/api'
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_URL || defaultBaseURL,
   timeout: 10000,
 })
 
@@ -114,6 +116,24 @@ export const publicService = {
   getLeagueUpdates: (params = {}) => api.get('/public/updates', { params }).then(res => res.data.content || []),
   getFreeAgents: () => api.get('/public/free-agents').then(res => res.data),
   getSeasonHistory: (seasonId) => api.get(`/public/seasons/${seasonId}/history`).then(res => res.data),
+}
+
+// ===== AUTH SERVICES =====
+export const authService = {
+  login: (credentials) => api.post('/auth/login', credentials).then(res => res.data),
+  register: (userData) => api.post('/auth/register', userData).then(res => res.data),
+  getCurrentUser: () => api.get('/auth/me').then(res => res.data),
+  googleAuth: (idToken) => api.post('/auth/google', { idToken }).then(res => res.data),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }).then(res => res.data),
+  validateResetToken: (token) => api.get(`/auth/reset-password/validate?token=${token}`).then(res => res.data),
+  resetPassword: (token, newPassword, confirmPassword) => 
+    api.post('/auth/reset-password', { token, newPassword, confirmPassword }).then(res => res.data),
+  updateProfile: (profileData) => api.put('/auth/profile', profileData).then(res => res.data),
+  changePassword: (passwordData) => api.put('/auth/change-password', passwordData).then(res => res.data),
+  uploadProfilePicture: (formData) => 
+    api.post('/auth/upload-profile-picture', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }).then(res => res.data),
 }
 
 // ===== ADMIN SERVICES =====
