@@ -9,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +34,36 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Static assets (the React SPA bundle, favicon, robots.txt, etc.) bypass
+     * the security filter chain entirely. The JwtAuthenticationFilter does not
+     * run for these paths, so a missing or invalid token never produces a 403
+     * for a CSS or image file.
+     */
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(
+            "/assets/**",
+            "/static/**",
+            "/webjars/**",
+            "/favicon.ico",
+            "/robots.txt",
+            "/manifest.json",
+            "/index.html",
+            "/*.svg",
+            "/*.png",
+            "/*.jpg",
+            "/*.jpeg",
+            "/*.gif",
+            "/*.ico",
+            "/*.css",
+            "/*.js",
+            "/*.map",
+            "/*.txt",
+            "/*.webmanifest"
+        );
     }
     
     @Bean
