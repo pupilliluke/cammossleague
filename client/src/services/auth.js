@@ -17,10 +17,6 @@ export const authService = {
   getDashboard: () => 
     api.get('/secure/dashboard').then(res => res.data),
   
-  // Get my team info
-  getMyTeam: () => 
-    api.get('/secure/my-team').then(res => res.data),
-  
   // Get team details (if authorized)
   getTeamDetails: (teamId) => 
     api.get(`/secure/teams/${teamId}`).then(res => res.data),
@@ -50,6 +46,21 @@ export const authService = {
   
   // Get stored token
   getToken: () => localStorage.getItem('token'),
+  
+  // Update profile
+  updateProfile: (profileData) => 
+    api.put('/auth/profile', profileData).then(res => res.data),
+  
+  // Change password
+  changePassword: (passwordData) => 
+    api.put('/auth/change-password', passwordData).then(res => res.data),
+  
+  // Upload profile picture (placeholder - would need file upload implementation)
+  uploadProfilePicture: (file) => {
+    // This would typically involve a separate file upload endpoint
+    // For now, returning a placeholder URL
+    return Promise.resolve({ url: '/api/files/profile-pictures/' + Date.now() + '.jpg' })
+  },
   
   // Logout
   logout: () => {

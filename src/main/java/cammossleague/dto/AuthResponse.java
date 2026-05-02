@@ -23,4 +23,12 @@ public class AuthResponse {
     private User.Role role;
     private Long teamId; // If user is a player on a team
     private String teamName;
+    private Integer yearsPlayed;
+    private String bio;
+    private String teamHistory;
+    private String phone;
+    private String emergencyContactName;
+    private String emergencyContactPhone;
+    private String profileImageUrl;
+    private Boolean isFreeAgent;
 }

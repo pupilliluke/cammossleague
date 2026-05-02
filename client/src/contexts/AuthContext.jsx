@@ -110,6 +110,27 @@ export const AuthProvider = ({ children }) => {
   const signInWithGoogle = loginWithGoogle
   const signOut = logout
 
+  const updateProfile = async (profileData) => {
+    try {
+      const response = await authService.updateProfile(profileData)
+      setUser(response)
+      setAppUser(response)
+      return response
+    } catch (error) {
+      console.error('Update profile error:', error)
+      throw error
+    }
+  }
+
+  const changePassword = async (passwordData) => {
+    try {
+      return await authService.changePassword(passwordData)
+    } catch (error) {
+      console.error('Change password error:', error)
+      throw error
+    }
+  }
+
   const value = {
     user,
     appUser,
@@ -120,6 +141,8 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     loginWithGoogle,
+    updateProfile,
+    changePassword,
     signIn,
     signUp,
     signInWithGoogle,

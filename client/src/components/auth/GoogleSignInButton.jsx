@@ -30,7 +30,11 @@ const GoogleSignInButton = ({
             client_id: clientId,
             callback: handleCredentialResponse,
             auto_select: false,
-            cancel_on_tap_outside: false
+            cancel_on_tap_outside: false,
+            use_fedcm_for_prompt: false,
+            // Add COOP policy handling
+            ux_mode: 'popup',
+            context: 'signin'
           })
 
           // Detect mobile device
@@ -107,17 +111,8 @@ const GoogleSignInButton = ({
       } else {
         // Fallback: trigger Google sign-in prompt
         if (window.google && window.google.accounts) {
-          // On mobile, use a more direct approach
-          if (isMobile) {
-            window.google.accounts.id.prompt((notification) => {
-              if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                // Force a direct authentication flow on mobile
-                console.log('Google prompt not displayed on mobile, using alternative flow')
-              }
-            })
-          } else {
-            window.google.accounts.id.prompt()
-          }
+          // Don't use automatic prompts to avoid COOP issues
+          console.log('Google button not found, manual sign-in required')
         }
       }
     }

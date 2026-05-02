@@ -5,6 +5,8 @@ import cammossleague.dto.LoginRequest;
 import cammossleague.dto.RegisterRequest;
 import cammossleague.dto.PasswordResetRequestDTO;
 import cammossleague.dto.PasswordResetConfirmDTO;
+import cammossleague.dto.UpdateProfileRequest;
+import cammossleague.dto.ChangePasswordRequest;
 import cammossleague.model.Player;
 import cammossleague.model.User;
 import cammossleague.repository.PlayerRepository;
@@ -20,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -95,6 +98,14 @@ public class AuthController {
                 .role(user.getRole())
                 .teamId(teamId)
                 .teamName(teamName)
+                .phone(user.getPhone())
+                .emergencyContactName(user.getEmergencyContactName())
+                .emergencyContactPhone(user.getEmergencyContactPhone())
+                .profileImageUrl(user.getProfileImageUrl())
+                .isFreeAgent(user.getIsFreeAgent())
+                .yearsPlayed(user.getYearsPlayed())
+                .bio(user.getBio())
+                .teamHistory(user.getTeamHistory())
                 .build();
             
             return ResponseEntity.ok(authResponse);
@@ -145,6 +156,14 @@ public class AuthController {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .role(user.getRole())
+                .phone(user.getPhone())
+                .emergencyContactName(user.getEmergencyContactName())
+                .emergencyContactPhone(user.getEmergencyContactPhone())
+                .profileImageUrl(user.getProfileImageUrl())
+                .isFreeAgent(user.getIsFreeAgent())
+                .yearsPlayed(user.getYearsPlayed())
+                .bio(user.getBio())
+                .teamHistory(user.getTeamHistory())
                 .build();
             
             return ResponseEntity.ok(authResponse);
@@ -160,9 +179,19 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Not authenticated");
         }
         
-        String username = authentication.getName();
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        String usernameOrEmail = authentication.getName();
+        
+        // First try to find by username (for traditional users)
+        User user = userRepository.findByUsername(usernameOrEmail).orElse(null);
+        
+        // If not found by username, try to find by email (for Google OAuth users)
+        if (user == null) {
+            user = userRepository.findByEmail(usernameOrEmail).orElse(null);
+        }
+        
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
         
         AuthResponse response = AuthResponse.builder()
             .userId(user.getId())
@@ -171,6 +200,14 @@ public class AuthController {
             .firstName(user.getFirstName())
             .lastName(user.getLastName())
             .role(user.getRole())
+            .phone(user.getPhone())
+            .emergencyContactName(user.getEmergencyContactName())
+            .emergencyContactPhone(user.getEmergencyContactPhone())
+            .profileImageUrl(user.getProfileImageUrl())
+            .isFreeAgent(user.getIsFreeAgent())
+            .yearsPlayed(user.getYearsPlayed())
+            .bio(user.getBio())
+            .teamHistory(user.getTeamHistory())
             .build();
         
         return ResponseEntity.ok(response);
@@ -246,6 +283,147 @@ public class AuthController {
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Password reset failed: " + e.getMessage());
+        }
+    }
+    
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateProfileRequest request) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.badRequest().body("Not authenticated");
+            }
+            
+            String usernameOrEmail = authentication.getName();
+            
+            // First try to find by username (for traditional users)
+            User user = userRepository.findByUsername(usernameOrEmail).orElse(null);
+            
+            // If not found by username, try to find by email (for Google OAuth users)
+            if (user == null) {
+                user = userRepository.findByEmail(usernameOrEmail).orElse(null);
+            }
+            
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            
+            // Check if new username is taken (if changed)
+            if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
+                if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+                    return ResponseEntity.badRequest().body("Username already taken");
+                }
+                user.setUsername(request.getUsername());
+            }
+            
+            // Check if new email is taken (if changed)
+            if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
+                if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+                    return ResponseEntity.badRequest().body("Email already taken");
+                }
+                user.setEmail(request.getEmail());
+            }
+            
+            // Update other fields if provided
+            if (request.getFirstName() != null && !request.getFirstName().trim().isEmpty()) {
+                user.setFirstName(request.getFirstName().trim());
+            }
+            if (request.getLastName() != null && !request.getLastName().trim().isEmpty()) {
+                user.setLastName(request.getLastName().trim());
+            }
+            if (request.getPhone() != null) {
+                user.setPhone(request.getPhone().trim());
+            }
+            if (request.getEmergencyContactName() != null) {
+                user.setEmergencyContactName(request.getEmergencyContactName().trim());
+            }
+            if (request.getEmergencyContactPhone() != null) {
+                user.setEmergencyContactPhone(request.getEmergencyContactPhone().trim());
+            }
+            if (request.getProfileImageUrl() != null) {
+                user.setProfileImageUrl(request.getProfileImageUrl());
+            }
+            if (request.getIsFreeAgent() != null) {
+                user.setIsFreeAgent(request.getIsFreeAgent());
+            }
+            if (request.getYearsPlayed() != null) {
+                user.setYearsPlayed(request.getYearsPlayed());
+            }
+            if (request.getBio() != null) {
+                user.setBio(request.getBio().trim());
+            }
+            if (request.getTeamHistory() != null) {
+                user.setTeamHistory(request.getTeamHistory().trim());
+            }
+            
+            User updatedUser = userRepository.save(user);
+            
+            // Return updated auth response
+            AuthResponse authResponse = AuthResponse.builder()
+                .userId(updatedUser.getId())
+                .username(updatedUser.getUsername())
+                .email(updatedUser.getEmail())
+                .firstName(updatedUser.getFirstName())
+                .lastName(updatedUser.getLastName())
+                .role(updatedUser.getRole())
+                .phone(updatedUser.getPhone())
+                .emergencyContactName(updatedUser.getEmergencyContactName())
+                .emergencyContactPhone(updatedUser.getEmergencyContactPhone())
+                .profileImageUrl(updatedUser.getProfileImageUrl())
+                .isFreeAgent(updatedUser.getIsFreeAgent())
+                .yearsPlayed(updatedUser.getYearsPlayed())
+                .bio(updatedUser.getBio())
+                .teamHistory(updatedUser.getTeamHistory())
+                .build();
+            
+            return ResponseEntity.ok(authResponse);
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Profile update failed: " + e.getMessage());
+        }
+    }
+    
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        try {
+            if (!request.passwordsMatch()) {
+                return ResponseEntity.badRequest().body("New password and confirmation do not match");
+            }
+            
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.badRequest().body("Not authenticated");
+            }
+            
+            String usernameOrEmail = authentication.getName();
+            
+            // First try to find by username (for traditional users)
+            User user = userRepository.findByUsername(usernameOrEmail).orElse(null);
+            
+            // If not found by username, try to find by email (for Google OAuth users)
+            if (user == null) {
+                user = userRepository.findByEmail(usernameOrEmail).orElse(null);
+            }
+            
+            if (user == null) {
+                throw new RuntimeException("User not found");
+            }
+            
+            // Verify current password
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+                return ResponseEntity.badRequest().body("Current password is incorrect");
+            }
+            
+            // Update password
+            user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+            
+            return ResponseEntity.ok().body(Map.of(
+                "message", "Password changed successfully"
+            ));
+            
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Password change failed: " + e.getMessage());
         }
     }
 }

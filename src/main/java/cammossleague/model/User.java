@@ -80,6 +80,15 @@ public class User {
     @Column(name = "emergency_contact_phone", length = 20)
     private String emergencyContactPhone;
     
+    @Column(name = "years_played")
+    private Integer yearsPlayed;
+    
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+    
+    @Column(name = "team_history", columnDefinition = "TEXT")
+    private String teamHistory;
+    
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Disclosure } from '@headlessui/react'
 import { 
@@ -11,10 +11,11 @@ import {
 } from '@heroicons/react/24/outline'
 import { useAuth } from '../../contexts/AuthContext'
 import { useSeason } from '../../contexts/SeasonContext'
+import { authService } from '../../services/auth'
 import LoginModal from '../auth/LoginModal'
 import RegisterModal from '../auth/RegisterModal'
 
-const navigation = [
+const baseNavigation = [
   { name: 'Home', href: '/' },
   { name: 'League', href: '/league' },
   { name: 'Teams', href: '/teams' },
@@ -30,6 +31,29 @@ export default function Header() {
   const { activeSeason } = useSeason()
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showRegisterModal, setShowRegisterModal] = useState(false)
+  const [userTeam, setUserTeam] = useState(null)
+  const [teamLoading, setTeamLoading] = useState(false)
+
+  // Check if user has a team when authenticated
+  useEffect(() => {
+    const checkUserTeam = () => {
+      if (isAuthenticated && appUser?.role === 'PLAYER') {
+        // Use team info from auth response instead of making unnecessary API call
+        if (appUser?.teamId && appUser?.teamName) {
+          setUserTeam({
+            id: appUser.teamId,
+            name: appUser.teamName
+          })
+        } else {
+          setUserTeam(null)
+        }
+      } else {
+        setUserTeam(null)
+      }
+    }
+
+    checkUserTeam()
+  }, [isAuthenticated, appUser])
 
   const handleLogout = async () => {
     try {
@@ -38,6 +62,19 @@ export default function Header() {
       console.error('Logout error:', error)
     }
   }
+
+  // Create dynamic navigation based on user status
+  const navigation = React.useMemo(() => {
+    const nav = [...baseNavigation]
+    
+    // Add "Register Team" link for authenticated players without a team
+    if (isAuthenticated && appUser?.role === 'PLAYER' && !teamLoading && !userTeam) {
+      // Insert after "League" but before "Teams"
+      nav.splice(2, 0, { name: 'Register Team', href: '/register-team' })
+    }
+    
+    return nav
+  }, [isAuthenticated, appUser, teamLoading, userTeam])
 
   return (
     <>

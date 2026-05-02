@@ -16,6 +16,7 @@ public interface TeamRepository extends JpaRepository<Team, Long>, JpaSpecificat
     List<Team> findBySeasonYear(Integer year);
     List<Team> findBySeasonIdAndIsActiveTrue(Long seasonId);
     List<Team> findByIsActiveTrueOrderByName();
+    List<Team> findBySeasonIdAndCaptainId(Long seasonId, Long captainId);
     
     @Modifying
     @Query(value = "ALTER SEQUENCE teams_id_seq RESTART WITH 12", nativeQuery = true)

@@ -9,6 +9,7 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 // Public Pages
 import HomePage from './pages/HomePage'
 import SignupPage from './pages/SignupPage'
+import TeamRegistrationPage from './pages/TeamRegistrationPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import LeaguePage from './pages/LeaguePage'
 import TeamsPage from './pages/TeamsPage'
@@ -50,6 +51,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/register-team" element={<TeamRegistrationPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/league" element={<LeaguePage />} />
           <Route path="/schedule" element={<SchedulePage />} />
