@@ -3,6 +3,7 @@ package cammossleague.config;
 import cammossleague.security.CustomUserDetailsService;
 import cammossleague.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,9 @@ public class SecurityConfig {
     
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Value("${spring.web.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
+    private String[] allowedOrigins;
     
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -130,11 +134,21 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173", "http://localhost:3001", "http://localhost:3002", "http://127.0.0.1:5500", "http://localhost:8080", "http://localhost:8081"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Local dev origins (Vite, CRA, IDE preview, alt ports) plus whatever
+        // `spring.web.cors.allowed-origins` provides at runtime (the Railway
+        // public domain in production, set via CORS_ALLOWED_ORIGINS env var).
+        // allowedOriginPatterns lets us match the deployed domain even before
+        // CORS_ALLOWED_ORIGINS is configured: any *.up.railway.app subdomain.
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*",
+            "http://127.0.0.1:*",
+            "https://*.up.railway.app"
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
