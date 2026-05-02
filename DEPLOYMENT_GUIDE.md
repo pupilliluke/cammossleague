@@ -172,6 +172,8 @@ VITE_FIREBASE_APP_ID=1:123456789:web:abcdef
 
 Backend:
 ```bash
+# SPRING_PROFILES_ACTIVE=production ./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=production
 ./mvnw spring-boot:run
 ```
 

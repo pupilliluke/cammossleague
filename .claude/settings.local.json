@@ -95,7 +95,16 @@
       "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -U postgres -h localhost -d \"cammossleague-local\" -c \"SELECT * FROM seasons\")",
       "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -U postgres -h localhost -d \"cammossleague-local\" -c \"\\copy seasons TO ''seasons_export.csv'' WITH CSV HEADER\")",
       "Bash(git fetch:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(ping:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -h db.xpdnjopqyhlodumnrxkl.supabase.co -p 6543 -U postgres -d postgres -c \"SELECT 1\" --connect-timeout=10)",
+      "Bash(jps:*)",
+      "Bash(\"C:\\Program Files\\PostgreSQL\\16\\bin\\psql.exe\" -h db.xpdnjopqyhlodumnrxkl.supabase.co -p 5432 -U postgres -d postgres -c \"SELECT username, COUNT(*) FROM users WHERE username IS NOT NULL GROUP BY username HAVING COUNT(*) > 1\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue | Select-Object LocalPort,OwningProcess | ForEach-Object { $p = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue; \"$\\($_.LocalPort\\) PID=$\\($_.OwningProcess\\) Name=$\\($p.ProcessName\\) Path=$\\($p.Path\\)\" })",
+      "PowerShell($body = @{ username = \"testadmin\"; password = \"test1234\"; email = \"test@local.dev\"; firstName = \"Test\"; lastName = \"Admin\"; role = \"ADMIN\" } | ConvertTo-Json; try { $r = Invoke-WebRequest -Uri \"http://localhost:8080/api/auth/register\" -Method POST -ContentType \"application/json\" -Body $body -UseBasicParsing; $r.Content } catch { Write-Output \"STATUS: $\\($_.Exception.Response.StatusCode.value__\\)\"; $sr = New-Object System.IO.StreamReader\\($_.Exception.Response.GetResponseStream\\(\\)\\); $sr.ReadToEnd\\(\\) })",
+      "PowerShell(Get-Command psql -ErrorAction SilentlyContinue)",
+      "PowerShell(if \\(-not $?\\) { \"psql not found on PATH\" })",
+      "PowerShell($cmd = Get-Command psql -ErrorAction SilentlyContinue; if \\($cmd\\) { \"FOUND: $\\($cmd.Source\\)\" } else { \"NOT FOUND on PATH\" })"
     ],
     "deny": []
   }
